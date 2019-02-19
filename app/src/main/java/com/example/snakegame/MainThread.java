@@ -9,15 +9,18 @@ import android.view.SurfaceHolder;
 
 
 public class MainThread extends Thread {
+
     private SurfaceHolder surfaceHolder;
     private GameView gameView;
     private boolean running;
     public static Canvas canvas;
+    private boolean starting;
 
     public MainThread(SurfaceHolder surfaceHolder, GameView gameView) {
         super();
         this.surfaceHolder = surfaceHolder;
         this.gameView = gameView;
+        starting = true;
     }
 
     public void setRunning(boolean isRunning) {
@@ -26,14 +29,22 @@ public class MainThread extends Thread {
 
     @Override
     public void run() {
+        // starting position
         while (running) {
             canvas = null;
 
             try {
                 canvas = this.surfaceHolder.lockCanvas();
                 synchronized (surfaceHolder) {
-                    this.gameView.update();
-                    this.gameView.draw(canvas);
+                    if(starting){
+                        this.gameView.draw(canvas);
+                        sleep(5000);
+                        starting = false;
+                    } else{
+                        this.gameView.update();
+                        this.gameView.draw(canvas);
+                        sleep(5000);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

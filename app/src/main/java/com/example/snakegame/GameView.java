@@ -1,10 +1,8 @@
 package com.example.snakegame;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 
@@ -16,11 +14,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     private Context context;
     private MainThread thread;
-    private SnakeSprite snakeSprite;
+    private Snake snake;
+    private int screenHeight, screenWidth;
 
     public GameView(Context context){
         super(context);
         this.context = context;
+        screenWidth = getResources().getSystem().getDisplayMetrics().widthPixels;
+        screenHeight = getResources().getSystem().getDisplayMetrics().heightPixels;
         getHolder().addCallback(this);
         thread = new MainThread(getHolder(), this);
         setFocusable(true);
@@ -28,7 +29,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        snakeSprite = new SnakeSprite(context);
+        snake = new Snake(context, screenWidth, screenHeight);
         thread.setRunning(true);
         thread.start();
     }
@@ -53,16 +54,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void update(){
-        snakeSprite.update();
+        snake.update("right");
     }
 
     @Override
     public void draw(Canvas canvas){
         super.draw(canvas);
         if(canvas!=null){
-            snakeSprite.draw(canvas);
+            snake.draw(canvas);
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent e){
+        return false;
+    }
+
+    @Override
+    public boolean performClick(){
+        super.performClick();
+        return false;
+    }
 
 }
